@@ -1,48 +1,50 @@
+//Author: Yixiang ZHOU
+
 #include<bits/stdc++.h>
 using namespace std;
 
-const long long max_flow = 17000; // ×î´óÁ÷Á¿ 
-const long long inital_v = 22.25 * 1e8; // ³õÊ¼Ë®Á¿ 
-const long long max_v = 25.85 * 1e8; // ×î´óË®Á¿ 
-const int divide = 100; // ¶àÉÙ¸öÒ»×é½øĞĞdp 
-const long long d = 50; // ÔÚ0-maxflowÃ¶¾ÙqÊ±£¬qÒ»´Î±ä»¯¶àÉÙ
-const long long dt = 3600; // Ê±¼ä¼ä¸ô 
+const long long max_flow = 17000; // æœ€å¤§æµé‡ 
+const long long inital_v = 22.25 * 1e8; // åˆå§‹æ°´é‡ 
+const long long max_v = 25.85 * 1e8; // æœ€å¤§æ°´é‡ 
+const int divide = 100; // å¤šå°‘ä¸ªä¸€ç»„è¿›è¡Œdp 
+const long long d = 50; // åœ¨0-maxflowæšä¸¾qæ—¶ï¼Œqä¸€æ¬¡å˜åŒ–å¤šå°‘
+const long long dt = 3600; // æ—¶é—´é—´éš” 
 
 //map<long long, pair<long long, long long>> f[100];
 //queue<long long> states;
-int states_cnt; // Ã¿´ÎdpºóÍ³¼ÆĞÂ³öÏÖµÄ×´Ì¬Êı 
-long long Q[300]; // ´æ·ÅÈë¿âÁ÷Á¿ 
+int states_cnt; // æ¯æ¬¡dpåç»Ÿè®¡æ–°å‡ºç°çš„çŠ¶æ€æ•° 
+long long Q[300]; // å­˜æ”¾å…¥åº“æµé‡ 
 double value=0;
 
-void work(int l, int r, long long &init) // ÒÔinit×÷Îª³õÊ¼Ë®Á¿£¬dp¼ÆËãQ[l]-Q[r] 
+void work(int l, int r, long long &init) // ä»¥initä½œä¸ºåˆå§‹æ°´é‡ï¼Œdpè®¡ç®—Q[l]-Q[r] 
 {
 	map<long long, pair<double, long long>> f[300];
-	// f[i][j].first ±íÊ¾£¬µÚiÊ±¿Ì£¬Ë®Á¿ÎªjÊ±£¬Ä¿±êº¯ÊıfµÄÖµ
-	// f[i][j].second ±íÊ¾£¬È¡µÃ¸Ãº¯ÊıÖµÊ±£¬f[i-1]µÄ×´Ì¬Öµ£¬ÓÃÀ´Êä³ödp½á¹û 
-	f[l-1][init] = {0,-1}; // ³õÊ¼×´Ì¬ 
-	queue<long long> states; // ´æ·ÅÃ¿Ò»´ÎdpºóĞÂÔö¼ÓµÄ×´Ì¬£¬ÔÚÔ­ÓĞµÄ»ù´¡ÉÏ¼ÌĞøÀ©Õ¹ 
+	// f[i][j].first è¡¨ç¤ºï¼Œç¬¬iæ—¶åˆ»ï¼Œæ°´é‡ä¸ºjæ—¶ï¼Œç›®æ ‡å‡½æ•°fçš„å€¼
+	// f[i][j].second è¡¨ç¤ºï¼Œå–å¾—è¯¥å‡½æ•°å€¼æ—¶ï¼Œf[i-1]çš„çŠ¶æ€å€¼ï¼Œç”¨æ¥è¾“å‡ºdpç»“æœ 
+	f[l-1][init] = {0,-1}; // åˆå§‹çŠ¶æ€ 
+	queue<long long> states; // å­˜æ”¾æ¯ä¸€æ¬¡dpåæ–°å¢åŠ çš„çŠ¶æ€ï¼Œåœ¨åŸæœ‰çš„åŸºç¡€ä¸Šç»§ç»­æ‰©å±• 
 	states.push(init); 
 	states_cnt = 1;
 	for(int i=l; i<=r; i++)
 	{
-		cout << "Now :" << i << endl; // µ±Ç°ÔÚ´¦ÀíµÄÊ±¿Ì 
-		cout << "states.size = " << states_cnt << endl; // ¸ÃÊ±¿ÌĞèÒª¿¼ÂÇµÄ×´Ì¬Êı
-		// Ã¿¸öÊ±¿ÌÒª¼ÆËãµÄ´ÎÊıÊÇ states_cnt * (maxflow / d) ¼¶±ğµÄ£¬ÓÉÓÚmap²Ù×÷¹ı¶à£¬³£ÊıºÜ´ó 
-		while(states_cnt--) // ´ÓÉÏÒ»ÂÖµÄ×´Ì¬µİÍÆµ±Ç° 
+		cout << "Now :" << i << endl; // å½“å‰åœ¨å¤„ç†çš„æ—¶åˆ» 
+		cout << "states.size = " << states_cnt << endl; // è¯¥æ—¶åˆ»éœ€è¦è€ƒè™‘çš„çŠ¶æ€æ•°
+		// æ¯ä¸ªæ—¶åˆ»è¦è®¡ç®—çš„æ¬¡æ•°æ˜¯ states_cnt * (maxflow / d) çº§åˆ«çš„ï¼Œç”±äºmapæ“ä½œè¿‡å¤šï¼Œå¸¸æ•°å¾ˆå¤§ 
+		while(states_cnt--) // ä»ä¸Šä¸€è½®çš„çŠ¶æ€é€’æ¨å½“å‰ 
 		{
-			long long last_v = states.front(); // È¡³öÒ»¸ö×´Ì¬£¨Ë®Á¿£©£¬ÒÔ´ËÀ´µİÍÆ 
+			long long last_v = states.front(); // å–å‡ºä¸€ä¸ªçŠ¶æ€ï¼ˆæ°´é‡ï¼‰ï¼Œä»¥æ­¤æ¥é€’æ¨ 
 			states.pop();
 			for(long long q=max((Q[i]-(max_v-last_v)/dt),0ll); q<=max_flow; q+=d)
-			// Ã¶¾ÙÏÂĞ¹Á÷Á¿q£¬ÆğÊ¼ÖµÒª±£Ö¤Ë®²»Òç³ö 
+			// æšä¸¾ä¸‹æ³„æµé‡qï¼Œèµ·å§‹å€¼è¦ä¿è¯æ°´ä¸æº¢å‡º 
 			{
 				if(q-Q[i]<=0)
-				// ¿¼ÂÇ Èë¿âÁ÷Á¿ >= ³ö¿âÁ÷Á¿ 
+				// è€ƒè™‘ å…¥åº“æµé‡ >= å‡ºåº“æµé‡ 
 				{
 					double t1 = f[i-1][last_v].first+q*q*dt;
 					bool ok = false;
 					if(!f[i].count(last_v+(Q[i]-q)*dt)) ok = true;
-					// µ±Ç°×´Ì¬¾ÍÊÇÔÚlast_v»ù´¡ÉÏ¼ÓÈëĞÂµÄ 
-					// Èç¹û²»´æÔÚµ±Ç°×´Ì¬¾ÍĞÂ½¨×´Ì¬£¬·ñÔòÓëÏÖÓĞµÄ×´Ì¬±È½Ï 
+					// å½“å‰çŠ¶æ€å°±æ˜¯åœ¨last_våŸºç¡€ä¸ŠåŠ å…¥æ–°çš„ 
+					// å¦‚æœä¸å­˜åœ¨å½“å‰çŠ¶æ€å°±æ–°å»ºçŠ¶æ€ï¼Œå¦åˆ™ä¸ç°æœ‰çš„çŠ¶æ€æ¯”è¾ƒ 
 					if(ok || f[i][last_v+(Q[i]-q)*dt].first >= t1)
 					{
 						f[i][last_v+(Q[i]-q)*dt] = {t1, last_v};
@@ -53,10 +55,10 @@ void work(int l, int r, long long &init) // ÒÔinit×÷Îª³õÊ¼Ë®Á¿£¬dp¼ÆËãQ[l]-Q[r]
 					}
 				}
 				else if(q-Q[i]>0)
-				// ¿¼ÂÇ³ö¿âÁ÷Á¿ > Èë¿âÁ÷Á¿ 
+				// è€ƒè™‘å‡ºåº“æµé‡ > å…¥åº“æµé‡ 
 				{
 					long long new_v = last_v - (q-Q[i])*dt;
-					if(new_v < 0) break; // Ë®Á¿µÍÓÚÒ»¶¨ÖµÊ±¾Í²»ÓÃÔÙÃ¶¾ÙºóÃæµÄqÁË 
+					if(new_v < 0) break; // æ°´é‡ä½äºä¸€å®šå€¼æ—¶å°±ä¸ç”¨å†æšä¸¾åé¢çš„qäº† 
 					double tt = f[i-1][last_v].first;
 					if(f[i].count(new_v)) 
 					{
@@ -76,7 +78,7 @@ void work(int l, int r, long long &init) // ÒÔinit×÷Îª³õÊ¼Ë®Á¿£¬dp¼ÆËãQ[l]-Q[r]
 		states_cnt = states.size();
 	}
 
-	// ´Ó×îºóÒ»¸ö×´Ì¬µİÍÆDPÊ±Ã¿²½µÄ×´Ì¬ 
+	// ä»æœ€åä¸€ä¸ªçŠ¶æ€é€’æ¨DPæ—¶æ¯æ­¥çš„çŠ¶æ€ 
 	pair<double, long long> final = {2e306,0};
 	long long v;
 	for(auto iter : f[r])
